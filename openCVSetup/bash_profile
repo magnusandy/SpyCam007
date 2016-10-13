@@ -1,6 +1,1 @@
-export PYTHON2_EXECUTRABLE=/usr/local/bin/python
-export PYTHON_INCLUDE_DIR=/usr/local/include/python2.7
-export PYTHON_INCLUDE_DIR2=/usr/include/x86_64-linux-gnu/python2.7
-export PYTHON_LIBRARY=/usr/lib/x86_64-linux-gnu/libpython2.7.so
-export PYTHON_NUMPY_INCLUDE_DIRS=/usr/lib/python<version>/dist-packages/numpy/core/include/
-. ~/cv/bin/activate
+

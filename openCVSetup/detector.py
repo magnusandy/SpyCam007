@@ -5,6 +5,9 @@ import datetime
 import time
 import cv2
 
+threatText = "Threat Detected!"
+secureText = "Area Secure"
+imageType = ".png"
 averageBGFrame = None;
 imgScale = 0.5; #change the image size
 minFindArea = 2000; #min area of find, removes small pieces of movement
@@ -19,14 +22,17 @@ greyscaleBlack = 255
 accumulateSpeed = 0.01; #speed at which accumulator forgets old values
 
 #number of passes of dialation, higher means larger merging
-dilationMultiplier = 2;
+dilationMultiplier = 4;
+
+lastCaptureTime = time.time();
+captureInterval = 10#seconds
 #starts the videocam on the default channel 0
 camera = cv2.VideoCapture(0); #starts the videocam on the default channel 0
  #sleep long enough for the camera to boot up and what not
-time.sleep(2)
+time.sleep(0)
 #main loop of the program, will continue
 while True:
-    text = "Empty"
+    text = secureText
     #read in the first frame from the video stream
     (frameReadCorrectly, readFrame) = camera.read();
     if not frameReadCorrectly:
@@ -63,17 +69,37 @@ while True:
     #finds all the seperate shapes in white in the image (all the pieces of movement)
     (contours, _) = cv2.findContours(dilatedFrame.copy(), cv2.RETR_EXTERNAL,
 		cv2.CHAIN_APPROX_SIMPLE)
-    for c in contours:
-        if cv2.contourArea(c) < minFindArea:
-            continue
-        (x, y, w, h) = cv2.boundingRect(c)
-        cv2.rectangle(readFrame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        text = "Used"
 
-    cv2.putText(readFrame, "Room Status: {}".format(text), (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+    #This next block of code finds the largest contourArea and draws a box around it on the screen
+    biggestAreaFound = 0;
+    biggestContour = None;
+    for c in contours:
+        cArea = cv2.contourArea(c);
+        #contours must be larger than a specified size to weed out small pieces of movement
+        if cArea > minFindArea:
+            #keeps only the biggest contours
+            if cArea > biggestAreaFound:
+                biggestAreaFound = cArea;
+                biggestContour = c;
+                text = threatText
+
+    #create the bounding rectangle for the largest contour
+    if biggestContour is not None:
+        (x, y, w, h) = cv2.boundingRect(biggestContour)
+        cv2.rectangle(readFrame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+    ##draw the bounding rectangle on the image as well as a  timestamp and status
+    cv2.putText(readFrame, text, (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
     currentTime = datetime.datetime.now();
-    cv2.putText(readFrame, currentTime.strftime("%A %d %B %Y %I:%M:%S%p"), (10, readFrame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255))
+    currentTimeString = currentTime.strftime("%A-%d-%B-%Y-%I:%M:%S%p")
+    ct = time.time()
+    cv2.putText(readFrame, currentTimeString, (10, readFrame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255))
     cv2.imshow('final', readFrame)
+    if ((ct-lastCaptureTime) > captureInterval) and text == threatText:
+        lastCaptureTime = ct
+        imgName = currentTimeString+imageType
+        print "saving image: "+imgName
+        cv2.imwrite(imgName, readFrame)
     if cv2.waitKey(1) == 27:
             break  # esc to quit
 cv2.destroyAllWindows()

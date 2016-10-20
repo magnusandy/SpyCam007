@@ -7,7 +7,7 @@ def show_webcam(mirror=False):
         if mirror:
             img = cv2.flip(img, 1)
 
-        cv2.imwrite("myImage.png", img)
+        x = cv2.imwrite("myImage.jpeg", img)
         cv2.imshow('my webcam', img)
         if cv2.waitKey(1) == 27:
             break  # esc to quit

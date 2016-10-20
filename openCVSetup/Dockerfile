@@ -1,11 +1,5 @@
 # KEEP UBUNTU OR DEBIAN UP TO DATE
 FROM python:2.7.12
-RUN apt-get -y update
-RUN apt-get -y upgrade
-RUN apt-get -y dist-upgrade
-RUN apt-get -y autoremove
-
-
 # INSTALL THE DEPENDENCIES
 
 # Build tools:

@@ -13,15 +13,14 @@ blurKernalSizeX = 5;
 blurKernalSizeY = 5;
 blurKernalSigmaX = 0;
 #threshhold Values
-greyscaleThreshholdValue = 25 # on a scale of 0-255 (white to black) the threshhold is the cutoff for which pixels are kept during the threshhold function if below they are kept(and turned white) and above are turned blackhamster124
+greyscaleThreshholdValue = 25 # on a scale of 0-255 (white to black) the threshhold is the cutoff for which pixels are kept during the threshhold function if below they are kept(and turned white) and above are turned black
 greyscaleBlack = 255
 
 #number of passes of dialation, higher means larger merging
 dilationMultiplier = 2;
 #starts the videocam on the default channel 0
 camera = cv2.VideoCapture(0); #starts the videocam on the default channel 0
-print camera.isOpened()
-time.sleep(20); #sleep long enough for the camera to boot up and what not
+ #sleep long enough for the camera to boot up and what not
 
 #main loop of the program, will continue
 while True:
@@ -38,13 +37,16 @@ while True:
     blackWhiteFrame = cv2.cvtColor(readFrame, cv2.COLOR_BGR2GRAY);
     blackWhiteFrame = cv2.GaussianBlur(blackWhiteFrame, (blurKernalSizeX, blurKernalSizeY), blurKernalSigmaX);
     if firstFrame is None:
-        firstFrame = blackWhiteFrame;
+        print "info starting bgm..."
+        firstFrame = blackWhiteFrame.copy().astype("float")
         continue
     cv2.imshow('firstFrame', firstFrame)
     cv2.imshow('blackWhite', blackWhiteFrame)
 
+    cv2.accumulateWeighted(blackWhiteFrame, firstFrame, 0.5)
+
     #take the difference betwen initial frame and current Frame
-    frameDelta = cv2.absdiff(firstFrame, blackWhiteFrame)
+    frameDelta = cv2.absdiff(blackWhiteFrame, cv2.convertScaleAbs(firstFrame))
     #threshhold converts any pixels below the greyscaleThreshholdValue to white and above to black
     ret, threshholdFrame = cv2.threshold(frameDelta, greyscaleThreshholdValue, greyscaleBlack, cv2.THRESH_BINARY)
     cv2.imshow('frameDelta', frameDelta)
@@ -55,7 +57,7 @@ while True:
     cv2.imshow('dilated', dilatedFrame)
 
     #finds all the seperate shapes in white in the image (all the pieces of movement)
-    (_, contours, _) = cv2.findContours(dilatedFrame.copy(), cv2.RETR_EXTERNAL,
+    (contours, _) = cv2.findContours(dilatedFrame.copy(), cv2.RETR_EXTERNAL,
 		cv2.CHAIN_APPROX_SIMPLE)
     for c in contours:
         if cv2.contourArea(c) < minFindArea:
@@ -70,4 +72,3 @@ while True:
     if cv2.waitKey(1) == 27:
             break  # esc to quit
 cv2.destroyAllWindows()
-    

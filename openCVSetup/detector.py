@@ -67,7 +67,9 @@ while True:
     #cv2.imshow('dilated', dilatedFrame)
 
     #finds all the seperate shapes in white in the image (all the pieces of movement)
-    (_, contours, _) = cv2.findContours(dilatedFrame.copy(), cv2.RETR_EXTERNAL,
+
+    #README if you have errors with this line, change the left side to (contours, _) in newer versions of opencv2 there is different number of return vals
+    (contours, _) = cv2.findContours(dilatedFrame.copy(), cv2.RETR_EXTERNAL,
 		cv2.CHAIN_APPROX_SIMPLE)
 
     #This next block of code finds the largest contourArea and draws a box around it on the screen

@@ -10,7 +10,7 @@ secureText = "Area Secure"
 imageType = ".png"
 averageBGFrame = None;
 imgScale = 0.5; #change the image size
-minFindArea = 2000; #min area of find, removes small pieces of movement
+minFindArea = 100000; #min area of find, removes small pieces of movement
 #used by the gaussian blur function, these are the sizes for the area that the function will blur over in pixels
 blurKernalSizeX = 11;
 blurKernalSizeY = 11;
@@ -29,7 +29,7 @@ captureInterval = 10#seconds
 #starts the videocam on the default channel 0
 camera = cv2.VideoCapture(0); #starts the videocam on the default channel 0
  #sleep long enough for the camera to boot up and what not
-time.sleep(0)
+time.sleep(2)
 #main loop of the program, will continue
 while True:
     text = secureText
@@ -38,7 +38,7 @@ while True:
     if not frameReadCorrectly:
         break
     #resize frame to half size fx and fy are size scales
-    readFrame = cv2.resize(readFrame, (0,0), fx=imgScale, fy=imgScale)
+    #readFrame = cv2.resize(readFrame, (0,0), fx=imgScale, fy=imgScale)
     #cv2.imshow('Initial Frame before processing', readFrame)
     #converts the frame to black and white and preforms a blur on the image
     #smoothing out the image and reducing "noise" making processing easier later
@@ -67,7 +67,7 @@ while True:
     #cv2.imshow('dilated', dilatedFrame)
 
     #finds all the seperate shapes in white in the image (all the pieces of movement)
-    (contours, _) = cv2.findContours(dilatedFrame.copy(), cv2.RETR_EXTERNAL,
+    (_, contours, _) = cv2.findContours(dilatedFrame.copy(), cv2.RETR_EXTERNAL,
 		cv2.CHAIN_APPROX_SIMPLE)
 
     #This next block of code finds the largest contourArea and draws a box around it on the screen
@@ -94,7 +94,7 @@ while True:
     currentTimeString = currentTime.strftime("%A-%d-%B-%Y-%I:%M:%S%p")
     ct = time.time()
     cv2.putText(readFrame, currentTimeString, (10, readFrame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255))
-    cv2.imshow('final', readFrame)
+    #cv2.imshow('final', readFrame)
     if ((ct-lastCaptureTime) > captureInterval) and text == threatText:
         lastCaptureTime = ct
         imgName = currentTimeString+imageType

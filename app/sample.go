@@ -32,7 +32,7 @@ import (
 
 const (
 	// This can be changed to any valid object name.
-	objectName = "newimg.jpg"
+	objectName = "nex.jpg"
 	// This scope allows the application full control over resources in Google Cloud Storage
 	scope = storage.DevstorageFullControlScope
 )
@@ -120,7 +120,11 @@ func main() {
 	if err != nil {
 		fatalf(service, "Error opening %q: %v", *fileName, err)
 	}
-	if res, err := service.Objects.Insert(*bucketName, object).Media(file).Do(); err == nil {
+	if res, err := service.Objects.Insert(*bucketName, object).
+  Media(file).
+  PredefinedAcl("publicread").//sets the image to be public and media link can be activated by anyone
+  Do();
+  err == nil {
 		fmt.Printf("Created object %v at location %v\n\n", res.Name, res.SelfLink)
 	} else {
 		fatalf(service, "Objects.Insert failed: %v", err)

@@ -10,7 +10,7 @@ secureText = "Area Secure"
 imageType = ".png"
 averageBGFrame = None;
 imgScale = 0.5; #change the image size
-minFindArea = 100000; #min area of find, removes small pieces of movement
+minFindArea = 5000; #min area of find, removes small pieces of movement
 #used by the gaussian blur function, these are the sizes for the area that the function will blur over in pixels
 blurKernalSizeX = 11;
 blurKernalSizeY = 11;
@@ -38,33 +38,40 @@ while True:
     if not frameReadCorrectly:
         break
     #resize frame to half size fx and fy are size scales
-    #readFrame = cv2.resize(readFrame, (0,0), fx=imgScale, fy=imgScale)
-    #cv2.imshow('Initial Frame before processing', readFrame)
+    readFrame = cv2.resize(readFrame, (0,0), fx=imgScale, fy=imgScale)
+    cv2.imshow('Step 0: Frame Before Processing', readFrame)
+    cv2.imwrite("InitialFrame.png", readFrame)
     #converts the frame to black and white and preforms a blur on the image
     #smoothing out the image and reducing "noise" making processing easier later
     blackWhiteFrame = cv2.cvtColor(readFrame, cv2.COLOR_BGR2GRAY);
     blackWhiteFrame = cv2.GaussianBlur(blackWhiteFrame, (blurKernalSizeX, blurKernalSizeY), blurKernalSigmaX);
+    cv2.imshow('Step 1: Convert to Grayscale', blackWhiteFrame)
+    cv2.imwrite("GreyscaleFrame.png", blackWhiteFrame)
     #This initializes the background, which is an average of the frames before it
     #instead of comparing to a static background, this can change over time
     if averageBGFrame is None:
         averageBGFrame = blackWhiteFrame.copy().astype("float")
         continue
-    #cv2.imshow('averageBGFrame', averageBGFrame)
-    #cv2.imshow('blackWhite', blackWhiteFrame)
+
 
     #adds blackWhiteFrame image onto averageBGFrame as a weighted average, the higher the speed the faster the weight will shift from older values
     cv2.accumulateWeighted(blackWhiteFrame, averageBGFrame, accumulateSpeed)
-
+    cv2.imshow('Step 2: Averaging the Frame', cv2.convertScaleAbs(averageBGFrame))
+    cv2.imwrite("AverageFrame.png", cv2.convertScaleAbs(averageBGFrame))
     #take the difference betwen initial frame and current Frame
     frameDelta = cv2.absdiff(blackWhiteFrame, cv2.convertScaleAbs(averageBGFrame))
     #threshhold converts any pixels below the greyscaleThreshholdValue to white and above to black
     ret, threshholdFrame = cv2.threshold(frameDelta, greyscaleThreshholdValue, greyscaleBlack, cv2.THRESH_BINARY)
-    #cv2.imshow('frameDelta', frameDelta)
-    #cv2.imshow('thresh', threshholdFrame)
+    cv2.imshow('Step 3: Absolute Difference', frameDelta)
+    cv2.imwrite("AbsoluteFrame.png", frameDelta)
+
+    cv2.imshow('Step 4: Keep the Threshhold', threshholdFrame)
+    cv2.imwrite("ThreshholdFrame.png", threshholdFrame)
 
     #used to clean up and connect the pieces of movement that are close together into one chunk
     dilatedFrame = cv2.dilate(threshholdFrame, None, iterations=dilationMultiplier)
-    #cv2.imshow('dilated', dilatedFrame)
+    cv2.imshow('Step 5: Dialate the Movement', dilatedFrame)
+    cv2.imwrite("DilateFrame.png", dilatedFrame)
 
     #finds all the seperate shapes in white in the image (all the pieces of movement)
 
@@ -96,7 +103,9 @@ while True:
     currentTimeString = currentTime.strftime("%A-%d-%B-%Y-%I:%M:%S%p")
     ct = time.time()
     cv2.putText(readFrame, currentTimeString, (10, readFrame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255))
-    #cv2.imshow('final', readFrame)
+    cv2.imshow('Final Image', readFrame)
+    cv2.imwrite("FinalFrame.png", readFrame)
+
     if ((ct-lastCaptureTime) > captureInterval) and text == threatText:
         lastCaptureTime = ct
         imgName = currentTimeString+imageType

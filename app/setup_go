@@ -1,3 +1,0 @@
-export GOPATH=$PWD/..
-export GOROOT=/usr/local/go/
-export GOOGLE_APPLICATION_CREDENTIALS=$PWD/laforgesplayground-5bc2a1fe0743.json

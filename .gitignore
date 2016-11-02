@@ -1,6 +1,7 @@
 .idea/
 bin/
 pkg/
-
+.DS_Store
+/server/laforgesplayground-5bc2a1fe0743.json
 !bin/.gitkeep
 !pkg/.gitkeep

@@ -4,12 +4,12 @@ import (
 	"net/http"
 	"fmt"
 	"errors"
-	//"time"
+	"io/ioutil"
+  "google.golang.org/appengine"
 )
 
 func HandlePicture(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
-		fmt.Fprint(w, "Got to save picture via a post request.", r.Method)
 		savePicture(r, w)
 	} else if r.Method == "GET" {
 		fmt.Fprint(w, "Got to save picture via a get request. ", r.Method)
@@ -24,17 +24,23 @@ func savePicture(r *http.Request, w http.ResponseWriter) error {
 		return errors.New("The given request for savePicture was not a post request.")
 	}
 
-	//file, handler, err := r.FormFile("img") // img is the key of the form-data
-	_, handler, err := r.FormFile("picture") // img is the key of the form-data
+	imageFile, header, err := r.FormFile("picture") // img is the key of the form-data
 	if err != nil {
-		// TODO add logging.
 		fmt.Fprintf(w, "Error: %s\n", err.Error())
 		return nil
 	}
-	fmt.Println("File is good")
-	fmt.Println(handler.Filename)
-	fmt.Println()
-	fmt.Println(handler.Header)
-	fmt.Fprintf(w, "Got filename %s\n", handler.Filename)
+  fmt.Fprintf(w, "Got filename %s\n", header.Filename)
+  if appengine.IsDevAppServer() {
+    fmt.Fprintf(w, "Error: %s\n", "Cannot save picture on dev app server")
+	}else{
+    csHandler := CSHandler{}
+    csHandler.InitCSHandler(r, "")
+    content, err := ioutil.ReadAll(imageFile)
+    if err != nil {
+      fmt.Fprintf(w, "Error ReadAll image contents: %s\n", "Cannot save")
+      return nil
+    }
+    csHandler.CreateCSFile(header.Filename, content, "image/png")
+  }
 	return nil
 }

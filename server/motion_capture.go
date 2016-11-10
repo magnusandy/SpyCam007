@@ -6,6 +6,7 @@ import (
 	"errors"
 	"io/ioutil"
   "google.golang.org/appengine"
+  "time"
 )
 
 func HandlePicture(w http.ResponseWriter, r *http.Request) {
@@ -40,7 +41,14 @@ func savePicture(r *http.Request, w http.ResponseWriter) error {
       fmt.Fprintf(w, "Error ReadAll image contents: %s\n", "Cannot save")
       return nil
     }
-    csHandler.CreateCSFile(header.Filename, content, "image/png")
+    mediaLink, err := csHandler.CreateCSFile(header.Filename, content, "image/png")
+    if err != nil {
+      fmt.Fprintf(w, "Error saving the image to storage: %s\n", err.Error())
+    }
+
+    newPicModel := &SpycamPicture{Url:mediaLink, Timestamp: time.Now()}
+    fmt.Fprintf(w, "newImageURL: %s\n", newPicModel.Url)
+    newPicModel.Save(r)
   }
 	return nil
 }

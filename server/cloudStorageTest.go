@@ -121,17 +121,33 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 //[START write]
 // createFile creates a file in Google Cloud Storage.
-func (d *CSHandler) CreateCSFile(fileName string, fileContents []byte, contentType string) {
+func (d *CSHandler) CreateCSFile(fileName string, fileContents []byte, contentType string) (string, error) {
 	fmt.Fprintf(d.w, "Creating file /%v/%v\n", d.bucketName, fileName)
-	wc := d.bucket.Object(fileName).NewWriter(d.ctx)
+  obj := d.bucket.Object(fileName)
+	wc := obj.NewWriter(d.ctx)
 	wc.ContentType = contentType
 	if _, err := wc.Write(fileContents); err != nil {
 		d.errorf("createFile: unable to write data to bucket %q, file %q: %v", d.bucketName, fileName, err)
-		return
+		return "", err
 	}
+//get the media link of the file saved
+
+
+
   if err := wc.Close(); err != nil {
     	d.errorf("error closing writer  %v", err)
+      return "", err
   }
+  //SET ACL to publicread
+ d.bucket.Object(fileName).ACL().Set(d.ctx, storage.AllUsers, storage.RoleReader)
+
+  m1, err := obj.Attrs(d.ctx)
+  if err != nil {
+    d.errorf("Error getting medialink   %v", err.Error())
+    return "", err
+  }
+  d.errorf("Obj1 MediaLink:   %v", m1.MediaLink)
+  return m1.MediaLink, nil
 }
 
 //[END write]

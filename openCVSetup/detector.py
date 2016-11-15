@@ -4,6 +4,8 @@ import datetime
 #import imutils #ignoring for now
 import time
 import cv2
+import requests
+import pytz
 
 threatText = "Threat Detected!"
 secureText = "Area Secure"
@@ -39,14 +41,14 @@ while True:
         break
     #resize frame to half size fx and fy are size scales
     readFrame = cv2.resize(readFrame, (0,0), fx=imgScale, fy=imgScale)
-    cv2.imshow('Step 0: Frame Before Processing', readFrame)
-    cv2.imwrite("InitialFrame.png", readFrame)
+    #cv2.imshow('Step 0: Frame Before Processing', readFrame)
+    #cv2.imwrite("InitialFrame.png", readFrame)
     #converts the frame to black and white and preforms a blur on the image
     #smoothing out the image and reducing "noise" making processing easier later
     blackWhiteFrame = cv2.cvtColor(readFrame, cv2.COLOR_BGR2GRAY);
     blackWhiteFrame = cv2.GaussianBlur(blackWhiteFrame, (blurKernalSizeX, blurKernalSizeY), blurKernalSigmaX);
-    cv2.imshow('Step 1: Convert to Grayscale', blackWhiteFrame)
-    cv2.imwrite("GreyscaleFrame.png", blackWhiteFrame)
+    #cv2.imshow('Step 1: Convert to Grayscale', blackWhiteFrame)
+    #cv2.imwrite("GreyscaleFrame.png", blackWhiteFrame)
     #This initializes the background, which is an average of the frames before it
     #instead of comparing to a static background, this can change over time
     if averageBGFrame is None:
@@ -56,22 +58,22 @@ while True:
 
     #adds blackWhiteFrame image onto averageBGFrame as a weighted average, the higher the speed the faster the weight will shift from older values
     cv2.accumulateWeighted(blackWhiteFrame, averageBGFrame, accumulateSpeed)
-    cv2.imshow('Step 2: Averaging the Frame', cv2.convertScaleAbs(averageBGFrame))
-    cv2.imwrite("AverageFrame.png", cv2.convertScaleAbs(averageBGFrame))
+    #cv2.imshow('Step 2: Averaging the Frame', cv2.convertScaleAbs(averageBGFrame))
+    #cv2.imwrite("AverageFrame.png", cv2.convertScaleAbs(averageBGFrame))
     #take the difference betwen initial frame and current Frame
     frameDelta = cv2.absdiff(blackWhiteFrame, cv2.convertScaleAbs(averageBGFrame))
     #threshhold converts any pixels below the greyscaleThreshholdValue to white and above to black
     ret, threshholdFrame = cv2.threshold(frameDelta, greyscaleThreshholdValue, greyscaleBlack, cv2.THRESH_BINARY)
-    cv2.imshow('Step 3: Absolute Difference', frameDelta)
-    cv2.imwrite("AbsoluteFrame.png", frameDelta)
+    #cv2.imshow('Step 3: Absolute Difference', frameDelta)
+    #cv2.imwrite("AbsoluteFrame.png", frameDelta)
 
-    cv2.imshow('Step 4: Keep the Threshhold', threshholdFrame)
-    cv2.imwrite("ThreshholdFrame.png", threshholdFrame)
+    #cv2.imshow('Step 4: Keep the Threshhold', threshholdFrame)
+    #cv2.imwrite("ThreshholdFrame.png", threshholdFrame)
 
     #used to clean up and connect the pieces of movement that are close together into one chunk
     dilatedFrame = cv2.dilate(threshholdFrame, None, iterations=dilationMultiplier)
-    cv2.imshow('Step 5: Dialate the Movement', dilatedFrame)
-    cv2.imwrite("DilateFrame.png", dilatedFrame)
+    #cv2.imshow('Step 5: Dialate the Movement', dilatedFrame)
+    #cv2.imwrite("DilateFrame.png", dilatedFrame)
 
     #finds all the seperate shapes in white in the image (all the pieces of movement)
 
@@ -99,18 +101,23 @@ while True:
 
     ##draw the bounding rectangle on the image as well as a  timestamp and status
     cv2.putText(readFrame, text, (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-    currentTime = datetime.datetime.now();
+    currentTime = datetime.datetime.now(pytz.timezone("America/Regina"));
     currentTimeString = currentTime.strftime("%A-%d-%B-%Y-%I:%M:%S%p")
     ct = time.time()
     cv2.putText(readFrame, currentTimeString, (10, readFrame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255))
     cv2.imshow('Final Image', readFrame)
-    cv2.imwrite("FinalFrame.png", readFrame)
+    #cv2.imwrite("FinalFrame.png", readFrame)
 
     if ((ct-lastCaptureTime) > captureInterval) and text == threatText:
         lastCaptureTime = ct
         imgName = currentTimeString+imageType
         print "saving image: "+imgName
         cv2.imwrite(imgName, readFrame)
+        #Now to send the image to the cloud storage
+        r = requests.post('http://laforgesplayground.appspot.com/pictures/', files={'picture': open(imgName, 'rb')})
+        print r.text
+
+
     if cv2.waitKey(1) == 27:
             break  # esc to quit
 cv2.destroyAllWindows()

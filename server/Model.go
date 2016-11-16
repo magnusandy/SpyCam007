@@ -31,3 +31,15 @@ func (pictureToSave *SpycamPicture) Save(r *http.Request) {
 		fmt.Println("Successful.")
 	}
 }
+
+/** Return a list of pictures matching the query. If err != nil, something went wrong when querying. */
+func QueryForPictureByDate(begin time.Time, end time.Time, r *http.Request) ([]SpycamPicture, error) {
+ ctx := appengine.NewContext(r)
+ var pictures []SpycamPicture
+ q := datastore.NewQuery(SpycamModelName).
+ Filter("Timestamp <=", end).
+ Filter("Timestamp >=", begin).
+ Order("Timestamp") // Order("-Timestamp")
+ _, err := q.GetAll(ctx, &pictures) // returns keys, and err.
+ return pictures, err
+}

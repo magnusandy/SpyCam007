@@ -2,7 +2,7 @@
   "name": "Spy Cam",
   "short_name": "SpyCam",
   "icons": [{
-        "src": "icon.png",
+        "src": "/static/icon.png",
         "type": "image/png",
         "sizes": "256x256"
       }],

@@ -7,7 +7,7 @@
      <meta name="mobile-web-app-capable" content="yes">
      <link rel="icon" sizes="93x93" href="/static/siteIcon.png">
     <meta charset="utf-8">
-    <link rel="manifest" href="/static/manifest.json">
+    <link rel="manifest" href="manifest.json">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
@@ -70,24 +70,8 @@
     </div> <!-- /container -->
 
   </body>
-  <script src="/static/Gallery-master/js/blueimp-gallery.min.js"></script>
+  <script src="/static/Gallery-master/js/blueimp-gallery-CUSTOM.js"></script>
   <script>
-  document.getElementById('links').onclick = function (event) {
-      event = event || window.event;
-      var target = event.target || event.srcElement,
-          link = target.src ? target.parentNode : target,
-          options = {index: link, event: event},
-          links = this.getElementsByTagName('a');
-      blueimp.Gallery(links, options);
-  };
+    doCallSetCurrentDates();
   </script>
-  <script>
-  blueimp.Gallery(
-    document.getElementById('links').getElementsByTagName('a'),
-    {
-        container: '#blueimp-gallery-carousel',
-        carousel: true
-    }
-);
-</script>
 </html>

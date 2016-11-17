@@ -109,7 +109,7 @@ function initializeGallery(){
       // supporting background-size="contain", which excludes IE < 9).
       // Set to "cover", to make images cover all available space (requires
       // support for background-size="cover", which excludes IE < 9):
-      stretchImages: false,
+      stretchImages: true,
       // Toggle the controls on pressing the Return key:
       toggleControlsOnReturn: true,
       // Toggle the controls on slide click:
@@ -136,7 +136,7 @@ function initializeGallery(){
       carousel: false,
       // Allow continuous navigation, moving from last to first
       // and from first to last slide:
-      continuous: true,
+      continuous: false,
       // Remove elements outside of the preload range from the DOM:
       unloadElements: true,
       // Start with the automatic slideshow:

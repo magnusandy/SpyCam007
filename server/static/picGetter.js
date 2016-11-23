@@ -22,7 +22,7 @@ function doCall() {
             while (linksDIV.firstChild) {
                 linksDIV.removeChild(linksDIV.firstChild);
             }
-            console.log(results)
+            console.log(results);
             for(index in results)
             {
                 pic = document.createElement("a");
@@ -47,6 +47,16 @@ function doCall() {
                   carousel: true
               }
           );
+            var galleryDiv = document.getElementById("longgallery");
+            while (galleryDiv.firstChild) {
+                galleryDiv.removeChild(galleryDiv.firstChild);
+            }
+            for (index in results) {
+                var pic = document.createElement("img");
+                pic.className += " longpic col-md-3";
+                galleryDiv.appendChild(pic);
+                pic.src=results[index].Url;
+            }
         },
         error: function(xhr,status,error) {
             console.error("Error: " + status + " " + error);

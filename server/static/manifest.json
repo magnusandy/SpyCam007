@@ -1,0 +1,14 @@
+{
+  "name": "Spy Cam",
+  "short_name": "SpyCam",
+  "icons": [{
+        "src": "icon.png",
+        "type": "image/png",
+        "sizes": "256x256"
+      }],
+  "start_url": "/index.html",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#c6d2c6",
+  "theme_color": "#c6d2c6"
+}

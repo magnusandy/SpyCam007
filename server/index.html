@@ -7,7 +7,7 @@
      <meta name="mobile-web-app-capable" content="yes">
      <link rel="icon" sizes="93x93" href="/static/siteIcon.png">
     <meta charset="utf-8">
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="/static/manifest.json">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
@@ -37,17 +37,17 @@
           <h1>SpyCam Gallery</h1>
         </div>
         <div class=" col-md-6 col-md-offset-1">
-          <form class="form-inline">
             <div class="form-group">
-              <label for="email">Date Range:</label>
+              <label for="firstDate">Date Range:</label>
               <input type="date" class="form-control" id="firstDate">
             </div>
             <div class="form-group">
-              <label for="pwd"> To </label>
+              <label for="secondDate"> To </label>
               <input type="date" class="form-control" id="secondDate">
             </div>
-          </form>
-          <button class="btn btn-default" onclick="doCall()">View</button>
+              <button class="btn btn-default" onclick="doCall()">View</button>
+
+
         </div>
       </div>
     </div>

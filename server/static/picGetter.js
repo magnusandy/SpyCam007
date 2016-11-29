@@ -12,8 +12,8 @@ doCall();
 }
 
 function doCall() {
-  startTime = ((document.getElementById("firstDate").valueAsNumber)/1000)+21600 //divide by 1000 to convert from miliseconds to seconds then add 21600 which is 6 hours in seconds to align unix time with local time
-  endTime = ((document.getElementById("secondDate").valueAsNumber)/1000)+21600
+  startTime = (Date.parse(document.getElementById("firstDate").value)/1000)+21600 //divide by 1000 to convert from miliseconds to seconds then add 21600 which is 6 hours in seconds to align unix time with local time
+  endTime = (Date.parse(document.getElementById("secondDate").value)/1000)+21600
     var query = "?startTime=" + startTime + "&endTime=" + endTime;
     $.ajax({
         url: "/pictures/" + query,
@@ -53,7 +53,7 @@ function doCall() {
             }
             for (index in results) {
                 var pic = document.createElement("img");
-                pic.className += " longpic col-md-3";
+                pic.className += " longpic col-xs-8 col-xs-offset-2 col-md-offset-0 col-md-3";
                 galleryDiv.appendChild(pic);
                 pic.src=results[index].Url;
             }

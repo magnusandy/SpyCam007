@@ -1,13 +1,10 @@
 function doCallSetCurrentDates()
 {
 var currentDate = new Date();
-var day = currentDate.getDate();
-var month = currentDate.getMonth() + 1;
-var year = currentDate.getFullYear();
-var today = year + "-" + month + "-" + day;
-var tomorrow = year + "-" + month + "-" + (day+1);
-document.getElementById("firstDate").value = today;
-document.getElementById("secondDate").value = tomorrow;
+var tomorrowDate = new Date();
+tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+document.getElementById("firstDate").valueAsNumber = currentDate.getTime();
+document.getElementById("secondDate").valueAsNumber = tomorrowDate.getTime();
 doCall();
 }
 

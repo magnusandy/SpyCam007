@@ -1,6 +1,10 @@
 # SpyCam007
 A project for CMPT 436. We're going to do motion capturing with a pi, upload it to a server, and serve it on a web app. 
 
+[Detailed Presentation and Description](https://drive.google.com/open?id=1knmU_6cxQ53bzwLr8JVPvMZ8jszvsUK12UYOAXiN_m4)
+
+# Screenshots
+
 # Installation Instructions
 ## SpyCam Software
 The spy cam runs as a python script, but in order to get it to work, OpenCV, an open source computer vision package needs to be installed
@@ -63,3 +67,4 @@ goapp deploy -application laforgesplayground --version v1 app.yaml
 ```
 
 This will upload the changes to laforgesplayground.appspot.com.
+

@@ -4,7 +4,9 @@ A project for CMPT 436. We're going to do motion capturing with a pi, upload it 
 [Detailed Presentation and Description](https://drive.google.com/open?id=1knmU_6cxQ53bzwLr8JVPvMZ8jszvsUK12UYOAXiN_m4)
 
 # Screenshots
-
+![img 1](http://i.imgur.com/BhFkkzt.png?1)
+![img 1](http://i.imgur.com/yg9wc26.png)
+![img 1](http://i.imgur.com/wDM8rsF.jpg?1)
 # Installation Instructions
 ## SpyCam Software
 The spy cam runs as a python script, but in order to get it to work, OpenCV, an open source computer vision package needs to be installed
